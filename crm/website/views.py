@@ -5,11 +5,9 @@ from .forms import SignUpForm, AddRecordForm
 from .models import Record
 
 def home(request):
-    records = Record.objects.all()
-
     # Check if the request is a POST request
     if request.method == "POST":
-        # If it is, try to log in
+        # try to log in
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -22,8 +20,15 @@ def home(request):
         else:
             messages.error(request, 'There was an error logging in, please try again.')
             return redirect('home')
+
     else:
-        return render(request, 'home.html', {'records':records})
+        if request.user.is_authenticated:
+            # user is authenticated, get his records and render them
+            records = Record.objects.all().filter(user=request.user)
+            return render(request, 'home.html', {'records':records})
+        else:
+            # go to login page
+            return render(request, 'home.html', {})
 
 
 def logout_user(request):
@@ -37,7 +42,6 @@ def register_user(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            # Authenticate and login
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
@@ -47,14 +51,12 @@ def register_user(request):
     else:
         form = SignUpForm()
         return render(request, 'register.html', {'form': form})
-
     return render(request, 'register.html', {'form': form})
 
 
 
 def customer_record(request, pk):
     if request.user.is_authenticated:
-        # look up records
         customer_record = Record.objects.get(id=pk)
         return render(request, 'record.html', {'customer_record': customer_record})
     else:
@@ -78,7 +80,9 @@ def add_record(request):
     if request.user.is_authenticated:
         if request.method == 'POST':
             if form.is_valid():
-                form.save()
+                record = form.save(commit=False)
+                record.user = request.user
+                record.save()
                 messages.success(request, "Recoed Added.")
                 return redirect('home')
         return render(request, 'add_record.html', {'form':form})
