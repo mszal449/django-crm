@@ -2,14 +2,12 @@
 {% block content %}
 
 
-
 <div class="card">
   <div class="card-header"><strong>
-    	{{ customer_record.first_name }}
-		{{ customer_record.last_name }}</strong>
+        {{ customer_record.first_name }}
+        {{ customer_record.last_name }}</strong>
   </div>
   <div class="card-body">
-
 
 
 <p class="card-text">
@@ -39,9 +37,10 @@
   </div>
 </div>
 <br>
-<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
 <a href="{% url 'delete_record' customer_record.id %}" class="btn btn-secondary btn-danger">Delete</a>
+<a href="{% url 'send_message' customer_record.id %}" class="btn btn-secondary">Message</a>
 <a href="{% url 'update_record' customer_record.id %}" class="btn btn-secondary">Update</a>
+<a href="{% url 'home' %}" class="btn btn-secondary">Back</a>
 
 
 {% endblock %}

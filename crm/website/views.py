@@ -103,3 +103,7 @@ def update_record(request, pk):
     else:
         messages.success(request, "You must be logged in to perform this action.")
         return redirect('home')
+
+
+def send_message(request, pk):
+    return render(request, 'send_message.html', {})
